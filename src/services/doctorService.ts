@@ -49,17 +49,9 @@ export const doctorService = {
       },
     });
 
-    // Backend DRF Pagination: { count, next, previous, results }
-    if (!Array.isArray(data) && Array.isArray(data.results)) {
-      return data.results;
-    }
+    if (Array.isArray(data)) return data;
 
-    // Si un jour backend retourne directement []
-    if (Array.isArray(data)) {
-      return data;
-    }
-
-    return [];
+    return data.results || [];
   },
 
   getDoctorById: async (id: number) => {

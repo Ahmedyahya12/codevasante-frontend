@@ -190,7 +190,7 @@ export default function PatientNavbar() {
                 </div>
 
                 <Link
-                  to="/patient/profile"
+                  to="/patient/appointments"
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center gap-3 rounded-2xl px-4 py-3 font-bold text-gray-700 hover:bg-[#F4F7FF]"
                 >
