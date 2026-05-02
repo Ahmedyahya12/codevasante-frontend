@@ -3,7 +3,6 @@ import {
   CalendarDays,
   Clock,
   FileText,
-
   Stethoscope,
   XCircle,
 } from 'lucide-react';
@@ -41,6 +40,20 @@ export default function PatientAppointmentsPage() {
     (state) => state.appointments
   );
 
+  const appointments = useMemo(() => {
+    if (Array.isArray(myAppointments)) return myAppointments;
+
+    if (
+      myAppointments &&
+      typeof myAppointments === 'object' &&
+      Array.isArray((myAppointments as any).results)
+    ) {
+      return (myAppointments as any).results;
+    }
+
+    return [];
+  }, [myAppointments]);
+
   useEffect(() => {
     dispatch(fetchMyAppointmentsThunk());
 
@@ -53,12 +66,12 @@ export default function PatientAppointmentsPage() {
 
   const stats = useMemo(() => {
     return {
-      total: myAppointments.length,
-      pending: myAppointments.filter((a) => a.status === 'pending').length,
-      confirmed: myAppointments.filter((a) => a.status === 'confirmed').length,
-      cancelled: myAppointments.filter((a) => a.status === 'cancelled').length,
+      total: appointments.length,
+      pending: appointments.filter((a: any) => a.status === 'pending').length,
+      confirmed: appointments.filter((a: any) => a.status === 'confirmed').length,
+      cancelled: appointments.filter((a: any) => a.status === 'cancelled').length,
     };
-  }, [myAppointments]);
+  }, [appointments]);
 
   const handleCancel = async (id: number) => {
     const result = await Swal.fire({
@@ -98,11 +111,7 @@ export default function PatientAppointmentsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-cyan-50 px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <section
-          className="mb-8 overflow-hidden rounded-[32px] border border-white/20
-bg-gradient-to-l from-[#1E2A78] via-[#2E37A4] to-[#0F766E]
-p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8"
-        >
+        <section className="mb-8 overflow-hidden rounded-[32px] border border-white/20 bg-gradient-to-l from-[#1E2A78] via-[#2E37A4] to-[#0F766E] p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8">
           <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
             <div>
               <span className="inline-flex rounded-full bg-white/10 px-4 py-2 text-xs font-black text-white ring-1 ring-white/20 backdrop-blur">
@@ -116,12 +125,7 @@ p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8"
               </p>
             </div>
 
-            {/* Auto refresh badge */}
-            <div
-              className="inline-flex items-center gap-2 rounded-2xl
-    bg-white/10 px-4 py-3 text-sm font-bold
-    ring-1 ring-white/20 backdrop-blur"
-            >
+            <div className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-3 text-sm font-bold ring-1 ring-white/20 backdrop-blur">
               <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle
                   className="opacity-25"
@@ -165,11 +169,11 @@ p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8"
             </div>
           </div>
 
-          {loading && myAppointments.length === 0 ? (
+          {loading && appointments.length === 0 ? (
             <div className="p-10 text-center text-sm font-bold text-slate-500">
               جاري تحميل المواعيد...
             </div>
-          ) : myAppointments.length === 0 ? (
+          ) : appointments.length === 0 ? (
             <EmptyState />
           ) : (
             <>
@@ -188,14 +192,18 @@ p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8"
                   </thead>
 
                   <tbody className="divide-y divide-slate-100">
-                    {myAppointments.map((item) => {
-                      const status = statusMap[item.status] || statusMap.pending;
+                    {appointments.map((item: any) => {
+                      const status =
+                        statusMap[item.status as keyof typeof statusMap] || statusMap.pending;
+
                       const disabledCancel =
                         item.status === 'cancelled' || item.status === 'checked_in';
 
                       return (
                         <tr key={item.id} className="transition hover:bg-cyan-50/40">
-                          <td className="px-5 py-4 text-sm font-bold text-slate-700">#{item.id}</td>
+                          <td className="px-5 py-4 text-sm font-bold text-slate-700">
+                            #{item.id}
+                          </td>
 
                           <td className="px-5 py-4">
                             <p className="text-sm font-black text-slate-900">
@@ -204,7 +212,7 @@ p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8"
                           </td>
 
                           <td className="px-5 py-4 text-sm font-bold text-slate-700">
-                            {item.date}
+                            {item.date || '---'}
                           </td>
 
                           <td className="px-5 py-4 text-sm font-bold text-slate-700">
@@ -240,8 +248,10 @@ p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8"
               </div>
 
               <div className="grid gap-4 p-4 lg:hidden">
-                {myAppointments.map((item) => {
-                  const status = statusMap[item.status] || statusMap.pending;
+                {appointments.map((item: any) => {
+                  const status =
+                    statusMap[item.status as keyof typeof statusMap] || statusMap.pending;
+
                   const disabledCancel =
                     item.status === 'cancelled' || item.status === 'checked_in';
 
@@ -252,7 +262,9 @@ p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8"
                     >
                       <div className="mb-4 flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-xs font-bold text-slate-400">موعد #{item.id}</p>
+                          <p className="text-xs font-bold text-slate-400">
+                            موعد #{item.id}
+                          </p>
                           <h3 className="mt-1 text-base font-black text-slate-900">
                             {item.doctor_name || '---'}
                           </h3>
@@ -266,7 +278,7 @@ p-6 text-white shadow-2xl shadow-blue-900/20 sm:p-8"
                       </div>
 
                       <div className="grid gap-3 text-sm">
-                        <MobileRow label="التاريخ" value={item.date} />
+                        <MobileRow label="التاريخ" value={item.date || '---'} />
                         <MobileRow label="الوقت" value={formatTime(item.time)} />
                         <MobileRow label="سبب الزيارة" value={item.reason || '---'} />
                       </div>

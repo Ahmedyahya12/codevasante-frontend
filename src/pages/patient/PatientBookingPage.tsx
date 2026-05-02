@@ -61,6 +61,25 @@ export default function PatientBookingPage() {
     return allDoctors.filter((doctor) => doctor.specialty === selectedSpecialty);
   }, [allDoctors, selectedSpecialty]);
 
+  const getBackendErrorMessage = (err: any) => {
+    const data = err?.response?.data;
+
+    console.log('appointment backend error:', data);
+
+    if (!data) return 'تعذر إنشاء الحجز. تأكد من الاتصال بالخادم وحاول مرة أخرى.';
+    if (typeof data === 'string') return data;
+    if (data.detail) return data.detail;
+    if (data.error) return data.error;
+    if (data.message) return data.message;
+
+    const firstKey = Object.keys(data)[0];
+    if (firstKey && Array.isArray(data[firstKey])) {
+      return `${firstKey}: ${data[firstKey][0]}`;
+    }
+
+    return JSON.stringify(data);
+  };
+
   useEffect(() => {
     const loadInitialData = async () => {
       try {
@@ -156,6 +175,7 @@ export default function PatientBookingPage() {
     try {
       setLoadingDoctors(true);
       const doctorsData = await doctorService.getDoctors({ specialty: value });
+
       setAllDoctors((prev) => {
         const merged = [...prev];
 
@@ -194,11 +214,13 @@ export default function PatientBookingPage() {
       setError(null);
 
       const payload = {
-        doctor: selectedDoctorId,
-        date,
-        time,
+        doctor: Number(selectedDoctorId),
+        appointment_date: date,
+        appointment_time: time,
         reason: reason.trim() || 'استشارة طبية',
       };
+
+      console.log('appointment payload:', payload);
 
       const { data } = await axiosInstance.post('/appointments/create/', payload);
 
@@ -215,16 +237,12 @@ export default function PatientBookingPage() {
         },
       });
     } catch (err: any) {
-      setError(
-        err?.response?.data?.detail ||
-          err?.response?.data?.error ||
-          err?.response?.data?.message ||
-          'تعذر إنشاء الحجز. تأكد من تسجيل الدخول وحاول مرة أخرى.'
-      );
+      setError(getBackendErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
   };
+
   return (
     <div className="min-h-screen bg-brand-light">
       <section className="bg-gradient-to-b from-white to-brand-light px-4 py-16 text-center sm:px-6 lg:px-8">
@@ -397,6 +415,7 @@ export default function PatientBookingPage() {
               )}
             </button>
           </form>
+
           <aside className="space-y-6">
             <InfoCard title="ساعات العمل">
               <p>السبت - الخميس: 08:00 - 22:00</p>
@@ -409,6 +428,7 @@ export default function PatientBookingPage() {
               <p>info@codevaclinic.com</p>
               <p>نواكشوط - موريتانيا</p>
             </InfoCard>
+
             <div className="rounded-[22px] bg-errorCustom-900 p-6 text-white shadow-soft">
               <h3 className="text-xl font-extrabold">حالة طارئة؟</h3>
               <p className="mt-2 text-sm text-white/80">اتصل مباشرة برقم الطوارئ.</p>
