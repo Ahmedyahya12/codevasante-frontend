@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  direction: rtl;
+}
+
+body {
+  margin: 0;
+  font-family: 'Cairo', sans-serif;
+  background: #f5f6f8;
+  color: #1c1f25;
+}
+
+@layer components {
+  .sidebar-link {
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-brand-muted transition hover:bg-indigoCustom-100 hover:text-brand-primary;
+  }
+
+  .sidebar-link-active {
+    @apply bg-indigoCustom-100 text-brand-primary;
+  }
+
+  .card {
+    @apply rounded-card border border-brand-border bg-white shadow-soft;
+  }
+
+  .btn-primary {
+    @apply rounded-xl bg-brand-primary px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-indigoCustom-900;
+  }
+
+  .btn-secondary {
+    @apply rounded-xl border border-brand-border bg-white px-4 py-2 text-sm font-bold text-brand-text transition hover:bg-brand-light;
+  }
+}
+
+/* ===============================
+   🎯 SCROLLBAR MODERN (CodevaClinic)
+================================= */
+
+/* Chrome / Edge / Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f6f8; /* brand-light */
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #2e37a4 0%,
+    #00d3c7 100%
+  ); /* primary → secondary */
+  border-radius: 999px;
+  border: 2px solid #f5f6f8;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #6068c3 0%,
+    #39e9df 100%
+  );
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2e37a4 #f5f6f8;
+}
+
+/* ===============================
+   ✨ TEXT SELECTION STYLE
+================================= */
+
+::selection {
+  background: #2e37a4; /* primary */
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: #2e37a4;
+  color: #ffffff;
+}
+
+/* ===============================
+   🔥 OPTIONAL: SMOOTH SCROLL
+================================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===============================
+   💡 BONUS: FOCUS (Inputs UX)
+================================= */
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: #2e37a4;
+  box-shadow: 0 0 0 3px rgba(46, 55, 164, 0.15);
+}
+
+/* ===============================
+   ✨ OPTIONAL: SCROLL SHADOW EFFECT
+================================= */
+
+body {
+  background: #ffffff;
+}
