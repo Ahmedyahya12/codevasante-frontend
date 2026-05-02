@@ -15,6 +15,7 @@ import {
 
 import axiosInstance from '@/services/axiosInstance';
 import { Doctor, doctorService } from '@/services/doctorService';
+import { useAppSelector } from '@/store/hooks';
 
 type LocationState = {
   selectedDoctor?: Doctor;
@@ -50,6 +51,16 @@ export default function PatientBookingPage() {
   const [timeMessage, setTimeMessage] = useState<string | null>(null);
 
   const today = new Date().toISOString().split('T')[0];
+
+  const { user } = useAppSelector((state) => state.auth);
+
+const patientName =
+  user?.full_name ||
+  `${user?.first_name || ''} ${user?.last_name || ''}`.trim() ||
+  'المريض';
+
+const patientPhone = user?.phone || 'غير متوفر';
+const patientEmail = user?.email || 'غير متوفر';
 
   const selectedDoctor = useMemo(() => {
     if (!selectedDoctorId) return null;
@@ -269,45 +280,26 @@ export default function PatientBookingPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <Field icon={User}>
                 <input
-                  value="Boutique Ahmed"
+                  value={patientName}
                   readOnly
-                  className="w-full bg-transparent text-sm font-bold text-brand-muted outline-none"
+                  className="w-full cursor-not-allowed bg-transparent text-sm font-bold text-brand-muted outline-none"
                 />
               </Field>
 
               <Field icon={Phone}>
                 <input
-                  value="48975273"
+                  value={patientPhone}
                   readOnly
-                  className="w-full bg-transparent text-sm font-bold text-brand-muted outline-none"
+                  className="w-full cursor-not-allowed bg-transparent text-sm font-bold text-brand-muted outline-none"
                 />
               </Field>
 
               <Field icon={Mail} className="md:col-span-2">
                 <input
-                  value="Ahmed@test.com"
+                  value={patientEmail}
                   readOnly
-                  className="w-full bg-transparent text-sm font-bold text-brand-muted outline-none"
+                  className="w-full cursor-not-allowed bg-transparent text-sm font-bold text-brand-muted outline-none"
                 />
-              </Field>
-
-              <Field icon={Stethoscope}>
-                <select
-                  value={selectedSpecialty}
-                  onChange={(e) => handleSpecialtyChange(e.target.value)}
-                  disabled={loadingSpecialties}
-                  className="w-full bg-transparent text-sm font-bold text-brand-text outline-none"
-                >
-                  <option value="">
-                    {loadingSpecialties ? 'جاري تحميل التخصصات...' : 'اختر التخصص'}
-                  </option>
-
-                  {specialties.map((specialty) => (
-                    <option key={specialty} value={specialty}>
-                      {specialty}
-                    </option>
-                  ))}
-                </select>
               </Field>
 
               <Field icon={User}>
